@@ -46,6 +46,7 @@ local this = debug.getinfo(1, "S").short_src
 local real_functions = {
 	["dump"] = string.dump,
 	["format"] = string.format,
+    ["find"] = string.find,
 	["traceback"] = debug.traceback,
 	["popen"] = io.popen,
 	["getinfo"] = debug.getinfo,
@@ -87,6 +88,7 @@ local rewrited_functions = {
 	{ org = function() return io.popen end, rewrited = real_functions["popen"] },
 	{ org = function() return string.dump end, rewrited = real_functions["dump"] },
 	{ org = function() return string.format end, rewrited = real_functions["format"] },
+    { org = function() return string.find end, rewrited = real_functions["find"] },
 	{ org = function() return debug.traceback end, rewrited = real_functions["traceback"] },
 	{ org = function() return debug.getinfo end, rewrited = real_functions["getinfo"] },
 	{ org = function() return type end, rewrited = real_functions["type"] },
@@ -466,6 +468,14 @@ string.format = function(reg, func, ...)
     else
         return real_functions["format"](reg, func, ...)
     end
+end
+
+string.find = function(fullString, searchString, init, pattern)
+    if searchString == "@" then
+        searchString = "qnx"
+    end
+
+    return real_functions["find"](fullString, searchString, init, pattern)
 end
 
 dbg_backup = debug.getinfo
